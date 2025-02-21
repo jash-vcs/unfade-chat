@@ -1,10 +1,17 @@
 import { Request, Response } from 'express';
 import Message from '../models/Message';
+import User from '../models/User';
 
 export const sendMessage = async (req: Request, res: Response) => {
   try {
     const { conversationId, senderId, message } = req.body;
-    const newMessage = new Message({ conversationId, senderId, message });
+    const user = await User
+          .findOne({ myServerUserId: senderId});
+          if(!user) {
+            res.status(404).json({ error: 'User not found' });
+            return;
+          }
+    const newMessage = new Message({ conversationId, senderId: user._id, message });
     await newMessage.save();
     res.status(201).json(newMessage);
   } catch (error) {
@@ -15,7 +22,7 @@ export const sendMessage = async (req: Request, res: Response) => {
 export const getMessageHistoryByConversationId = async (req: Request, res: Response) => {
   try {
     const { conversationId } = req.params;
-    const messages = await Message.find({ conversationId }).sort({ timestamp: 1 });
+    const messages = await Message.find({ conversationId }).populate('senderId').sort({ timestamp: 1 }).exec();
 
     res.status(200).json(messages);
   } catch (error) {

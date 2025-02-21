@@ -8,8 +8,8 @@ interface IMessage extends Document {
 }
 
 const messageSchema = new Schema<IMessage>({
-  conversationId: { type: String, required: true },
-  senderId: { type: String, required: true },
+  conversationId: { type: String, required: true, ref: 'Conversation' },
+  senderId: { type: String, required: true, ref: 'User' },
   message: { type: String, required: true },
   timestamp: { type: Date, default: Date.now },
 });

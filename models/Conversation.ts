@@ -7,7 +7,7 @@ interface IConversation extends Document {
 }
 
 const conversationSchema = new Schema<IConversation>({
-  participants: [{ type: String, required: true }],
+  participants: [{ type: String, required: true, ref: 'User' }],
   lastMessage: String,
   lastMessageTime: { type: Date, default: Date.now },
 });

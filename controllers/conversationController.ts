@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import Conversation from '../models/Conversation';
+import User from '../models/User';
 
 export const createConversation = async (req: Request, res: Response) => {
   try {
@@ -15,8 +16,14 @@ export const createConversation = async (req: Request, res: Response) => {
 export const getConversationsByUserId = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
+    const user = await User
+      .findOne({ myServerUserId: userId});
+      if(!user) {
+        res.status(404).json({ error: 'User not found' });
+        return;
+      }
     const conversations = await Conversation.find({
-      participants: userId,
+      participants: user._id,
     }).sort({ lastMessageTime: -1 });
 
     res.status(200).json(conversations);
