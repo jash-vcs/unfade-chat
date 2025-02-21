@@ -32,3 +32,12 @@ export const updateUser = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Error updating user' });
   }
 };
+
+export const getAllUsers = async (req: Request, res: Response) => {
+  try {
+    const users = await User.find();
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching users' });
+  }
+};
