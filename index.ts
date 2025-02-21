@@ -14,6 +14,7 @@ connectDB();
 const app: Application = express();
 const server = http.createServer(app);
 export const wss = new WebSocketServer({ server });
+
 app.use(cors());
 app.use(express.json());
 

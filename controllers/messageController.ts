@@ -2,8 +2,7 @@ import { Request, Response } from 'express';
 import Message from '../models/Message';
 import User from '../models/User';
 import Conversation from '../models/Conversation';
-
-
+import { wss } from '..';
 
 export const sendMessage = async (req: Request, res: Response) => {
   try {
@@ -27,7 +26,7 @@ export const sendMessage = async (req: Request, res: Response) => {
     }
     const newMessage = new Message({ conversationId, senderId: user._id, message });
     const savedMessage = await newMessage.save();
-    wss.emit(`message-for-${reciver.myServerUserId}`, JSON.stringify(savedMessage));
+    wss.emit(`message-for-${reciver.myServerUserId}`, savedMessage.toJSON());
     res.status(201).json(newMessage);
   } catch (error) {
     res.status(500).json({ error: 'Error sending message' });
