@@ -2,7 +2,8 @@ import { Request, Response } from 'express';
 import Message from '../models/Message';
 import User from '../models/User';
 import Conversation from '../models/Conversation';
-import { wss } from '..';
+
+
 
 export const sendMessage = async (req: Request, res: Response) => {
   try {
@@ -13,9 +14,20 @@ export const sendMessage = async (req: Request, res: Response) => {
             res.status(404).json({ error: 'User not found' });
             return;
           }
+    const conversation = await Conversation.findById(conversationId);
+    if (!conversation) {
+      res.status(404).json({ error: 'Conversation not found' });
+      return;
+    }
+    const reciverId = conversation.participants.find((participant) => participant.toString() !==( ""+user._id));
+    const reciver = await User.findById(reciverId);
+    if (!reciver) {
+      res.status(404).json({ error: 'Reciver not found' });
+      return;
+    }
     const newMessage = new Message({ conversationId, senderId: user._id, message });
-    await newMessage.save();
-    wss.emit(`message-${conversationId}`, JSON.stringify({ conversationId, senderId, message }));
+    const savedMessage = await newMessage.save();
+    wss.emit(`message-for-${reciver.myServerUserId}`, JSON.stringify(savedMessage));
     res.status(201).json(newMessage);
   } catch (error) {
     res.status(500).json({ error: 'Error sending message' });

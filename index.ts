@@ -7,7 +7,6 @@ import connectDB from './config/db';
 import userRoutes from './routes/userRoutes';
 import conversationRoutes from './routes/conversationRoutes';
 import messageRoutes from './routes/messageRoutes';
-import Message from './models/Message';
 
 dotenv.config();
 connectDB();
@@ -15,7 +14,6 @@ connectDB();
 const app: Application = express();
 const server = http.createServer(app);
 export const wss = new WebSocketServer({ server });
-
 app.use(cors());
 app.use(express.json());
 
