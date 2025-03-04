@@ -1,5 +1,5 @@
-import { Request, Response } from 'express';
-import User from '../models/User';
+import { Request, Response } from "express";
+import User from "../models/User";
 
 export const createUser = async (req: Request, res: Response) => {
   try {
@@ -8,7 +8,7 @@ export const createUser = async (req: Request, res: Response) => {
     await user.save();
     res.status(201).json(user);
   } catch (error) {
-    res.status(500).json({ error: 'Error creating user' });
+    res.status(500).json({ error: "Error creating user" });
   }
 };
 
@@ -17,19 +17,19 @@ export const updateUser = async (req: Request, res: Response) => {
     const { userId } = req.params;
     const { name, profilePicSrc, lastSeenOn } = req.body;
 
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
+    const updatedUser = await User.findOneAndUpdate(
+      { myServerUserId: userId },
       { name, profilePicSrc, lastSeenOn },
       { new: true }
     );
 
     if (!updatedUser) {
-    res.status(404).json({ error: 'User not found' });
+      res.status(404).json({ error: "User not found" });
     }
 
     res.status(200).json(updatedUser);
   } catch (error) {
-    res.status(500).json({ error: 'Error updating user' });
+    res.status(500).json({ error: "Error updating user" });
   }
 };
 
@@ -38,6 +38,6 @@ export const getAllUsers = async (req: Request, res: Response) => {
     const users = await User.find();
     res.status(200).json(users);
   } catch (error) {
-    res.status(500).json({ error: 'Error fetching users' });
+    res.status(500).json({ error: "Error fetching users" });
   }
 };

@@ -25,9 +25,21 @@ export const getConversationsByUserId = async (req: Request, res: Response) => {
     const conversations = await Conversation.find({
       participants: user._id,
     }).sort({ lastMessageTime: -1 });
+    const populatedConversations = await Conversation.find({
+      _id: {
+        $in: conversations.map((conversation) => conversation._id),
+      },
+    }).populate('participants').sort({ createdAt: -1 })
+    const conversationsWithRecivers = populatedConversations.map((conversation) => {
+      const newConversation:any = conversation.toObject();
+      newConversation.reciver = conversation.participants.find((participant) => participant.toString() !== (""+user._id));
+      return newConversation;
+    })
 
-    res.status(200).json(conversations);
+
+    res.status(200).json(conversationsWithRecivers);
   } catch (error) {
+    console.log(error)
     res.status(500).json({ error: 'Error fetching conversations' });
   }
 };
