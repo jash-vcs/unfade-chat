@@ -12,6 +12,8 @@ export const sendMessage = async (req: Request, res: Response) => {
       res.status(404).json({ error: 'User not found' });
       return;
     }
+    user.lastSeenOn = new Date();
+    await user.save();
     const conversation = await Conversation.findById(conversationId);
     if (!conversation) {
       res.status(404).json({ error: 'Conversation not found' });
