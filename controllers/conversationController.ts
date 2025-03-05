@@ -22,13 +22,8 @@ export const getConversationsByUserId = async (req: Request, res: Response) => {
         res.status(404).json({ error: 'User not found' });
         return;
       }
-    const conversations = await Conversation.find({
-      participants: user._id,
-    }).sort({ lastMessageTime: -1 });
     const populatedConversations = await Conversation.find({
-      _id: {
-        $in: conversations.map((conversation) => conversation._id),
-      },
+      participants: user._id,
     }).populate('participants').sort({ createdAt: -1 })
     const conversationsWithRecivers = populatedConversations.map((conversation) => {
       const newConversation:any = conversation.toObject();
