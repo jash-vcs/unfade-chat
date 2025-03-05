@@ -4,6 +4,11 @@ import User from "../models/User";
 export const createUser = async (req: Request, res: Response) => {
   try {
     const { name, profilePicSrc, myServerUserId } = req.body;
+    const existUser = await User.findOne({ myServerUserId: myServerUserId });
+    if(existUser) {
+      res.status(200).json({ error: "User already exists" });
+      return;
+    }
     const user = new User({ name, profilePicSrc, myServerUserId });
     await user.save();
     res.status(201).json(user);

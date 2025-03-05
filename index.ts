@@ -19,7 +19,7 @@ export const wss = new WebSocketServer({ server });
 const clients = new Map<string, WebSocket>();
 
 wss.on('connection', (ws: WebSocket, req: http.IncomingMessage) => {
-  const url = new URL(req.url || '', `ws://localhost:${process.env.PORT || 5000}`);
+  const url = new URL(req.url || '', `ws//${process.env.SELF_URL}`);
   const userId = url.pathname.split('/').pop(); // Extract userId from /ws/chat/<userId>
   
   if (userId) {
