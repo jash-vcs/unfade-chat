@@ -23,7 +23,7 @@ export const getConversationsByUserId = async (req: Request, res: Response) => {
         return;
       }
     const populatedConversations = await Conversation.find({
-      participants: user._id,
+      participants:userId,
     }).populate('participants').sort({ createdAt: -1 })
     const conversationsWithRecivers = populatedConversations.map((conversation) => {
       const newConversation:any = conversation.toObject();
