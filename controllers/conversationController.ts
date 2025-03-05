@@ -17,8 +17,10 @@ export const createConversation = async (req: Request, res: Response) => {
     const newConversation = new Conversation({ participants: userIds });
     await newConversation.save();
     res.status(201).json(conversation);
+    return;
   } catch (error) {
     res.status(500).json({ error: "Error creating conversation" });
+    return;
   }
 };
 
