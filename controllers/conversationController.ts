@@ -27,13 +27,14 @@ export const createConversation = async (req: Request, res: Response) => {
 export const getConversationsByUserId = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
-    const senderUser = await User.findOne({ myServerUserId: userId });
-    if (!senderUser) {
+    const fetcherUser = await User.findOne({ myServerUserId: userId });
+    if (!fetcherUser) {
       res.status(404).json({ error: "User not found" });
       return;
     }
+    console.log(fetcherUser)
     const populatedConversations = await Conversation.find({
-      participants: senderUser._id,
+      participants: { $in: [fetcherUser._id] },
     })
       .populate("participants")
       .sort({ createdAt: -1 });
@@ -41,7 +42,7 @@ export const getConversationsByUserId = async (req: Request, res: Response) => {
       (conversation) => {
         const newConversation: any = conversation.toObject();
         newConversation.reciver = conversation.participants.find(
-          (participant) => participant.toString() !== "" + senderUser._id
+          (participant) => participant.toString() !== "" + fetcherUser._id
         );
         return newConversation;
       }
