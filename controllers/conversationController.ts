@@ -6,7 +6,7 @@ export const createConversation = async (req: Request, res: Response) => {
   try {
     const { participants } = req.body;
     const users = await User.find({ myServerUserId: { $in: participants } });
-    const userIds = users.map((user) => user._id);
+    const userIds = users.map((u) => ("" + u._id));
     const conversation = await Conversation.findOne({
       participants: { $all: userIds },
     });
