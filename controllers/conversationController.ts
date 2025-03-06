@@ -32,7 +32,6 @@ export const getConversationsByUserId = async (req: Request, res: Response) => {
       res.status(404).json({ error: "User not found" });
       return;
     }
-    console.log(fetcherUser)
     const populatedConversations = await Conversation.find({
       participants: { $in: [fetcherUser._id] },
     })
@@ -41,14 +40,16 @@ export const getConversationsByUserId = async (req: Request, res: Response) => {
     const conversationsWithRecivers = populatedConversations.map(
       (conversation) => {
         const newConversation: any = conversation.toObject();
-        newConversation.reciver = conversation.participants.find(
-          (participant) => participant.toString() !== "" + fetcherUser._id
+        const reciver = newConversation.participants.find(
+          (participant:any) => participant._id.toString() !== ("" + fetcherUser._id)
         );
+        console.log(reciver)
+        newConversation.reciver = reciver
         return newConversation;
       }
     );
 
-    res.status(200).json(conversationsWithRecivers);
+    res.status(200).json(conversationsWithRecivers.filter((c:any) => c.reciver));
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Error fetching conversations" });
