@@ -36,7 +36,7 @@ export const getConversationsByUserId = async (req: Request, res: Response) => {
       participants: { $in: [fetcherUser._id] },
     })
       .populate("participants")
-      .sort({ createdAt: -1 });
+      .sort({ lastMessageTime: -1 });
     const conversationsWithRecivers = populatedConversations.map(
       (conversation) => {
         const newConversation: any = conversation.toObject();
