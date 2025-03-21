@@ -25,9 +25,13 @@ export const sendMessage = async (req: Request, res: Response) => {
       res.status(404).json({ error: 'Reciver not found' });
       return;
     }
+
     const newMessage = new Message({ conversationId, senderId, message });
     const savedMessage = await newMessage.save();
     
+    conversation.lastMessageTime = new Date();
+    conversation.lastMessage = message;
+    await conversation.save();
     // Emit message to receiver using WebSocket
     emitMessageToUser(reciver.myServerUserId, {
       type: 'new_message',
